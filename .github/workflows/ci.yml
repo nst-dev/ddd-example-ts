@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
       - run: bun install
-      - run: bun run test:unit --coverage --coverage-reporter=lcov
+      - run: bun run test:unit --coverage-reporter=lcov
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
