@@ -12,7 +12,7 @@ export class OrderService implements OrderServiceInterface {
     const cmd = OrderAggregate.create(items)
     const order = await this.repo.create(cmd.set as OrderProperties)
     cmd.dispatch.payload = {...cmd.dispatch.payload, order: order.get()}
-    this.bus.dispatch(cmd.dispatch)
+    await this.bus.dispatch(cmd.dispatch)
 
     return order
   }
@@ -24,7 +24,7 @@ export class OrderService implements OrderServiceInterface {
 
     const cmd = order.pushItem(item)
     await this.repo.update(order, cmd)
-    this.bus.dispatch(cmd.dispatch)
+    await this.bus.dispatch(cmd.dispatch)
   }
 
   async pay(order: OrderAggregateInterface) {
@@ -34,6 +34,6 @@ export class OrderService implements OrderServiceInterface {
 
     const cmd = order.pay()
     await this.repo.update(order, cmd)
-    this.bus.dispatch(cmd.dispatch)
+    await this.bus.dispatch(cmd.dispatch)
   }
 }

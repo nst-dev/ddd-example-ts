@@ -5,6 +5,6 @@ export type Event = {
 }
 
 export interface BusInterface {
-  dispatch(event: Event): void
-  listen(name: string, listener: (event: Event) => void): () => void
+  dispatch(event: Event): Promise<void>
+  listen(name: string, listener: (event: Event) => void): Promise<() => void>
 }

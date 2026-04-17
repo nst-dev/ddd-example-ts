@@ -19,7 +19,7 @@ describe('OrderService', () => {
   let service: OrderService
 
   beforeEach(() => {
-    bus = { dispatch: mock(() => {}), listen: mock(() => () => {}) }
+    bus = { dispatch: mock(() => Promise.resolve()), listen: mock(() => Promise.resolve(() => {})) }
     repo = {
       list: mock(() => Promise.resolve([])),
       find: mock(() => Promise.resolve(undefined)),
