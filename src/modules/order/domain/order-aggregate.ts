@@ -1,4 +1,5 @@
 import type { OrderAggregateCommand, OrderAggregateInterface, OrderItem, OrderProperties } from "../contracts";
+import { OrderStatus, OrderEventName } from "../contracts";
 
 export class OrderAggregate implements OrderAggregateInterface {
   constructor(
@@ -18,12 +19,12 @@ export class OrderAggregate implements OrderAggregateInterface {
     const order: OrderProperties = {
       items,
       amount: items.reduce((amount, item) => amount + item.price * item.quantity, 0),
-      status: 'Placed',
+      status: OrderStatus.Placed,
     }
 
     return {
       set: order,
-      dispatch: { name: 'Order.Placed', payload: { order } }
+      dispatch: { name: OrderEventName.Placed, payload: { order } }
     }
   }
 
@@ -31,18 +32,18 @@ export class OrderAggregate implements OrderAggregateInterface {
     return {
       push: { items: [item] },
       increment: { amount: item.price * item.quantity },
-      dispatch: { name: 'Order.ItemPushed', payload: { id: this.id, item } }
+      dispatch: { name: OrderEventName.ItemPushed, payload: { id: this.id, item } }
     }
   }
 
   canPay(): boolean {
-    return this.properties.status === 'Placed'
+    return this.properties.status === OrderStatus.Placed
   }
 
   pay(): OrderAggregateCommand {
     return {
-      set: { status: 'Paid' },
-      dispatch: { name: 'Order.Paid', payload: { id: this.id } }
+      set: { status: OrderStatus.Paid },
+      dispatch: { name: OrderEventName.Paid, payload: { id: this.id } }
     }
   }
 }

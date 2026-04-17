@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from 'bun:test'
 import { createServer } from '../../src/api'
+import { OrderStatus } from '../../src/modules/order/contracts'
 
 let server: ReturnType<typeof Bun.serve>
 let base: string
@@ -42,7 +43,7 @@ describe('API: Order', () => {
     const body = await res.json()
 
     expect(res.status).toBe(200)
-    expect(body.order.status).toBe('Placed')
+    expect(body.order.status).toBe(OrderStatus.Placed)
     expect(body.order.items).toHaveLength(1)
     expect(body.order.amount).toBe(200)
   })
@@ -79,7 +80,7 @@ describe('API: Order', () => {
     const body = await res.json()
 
     expect(res.status).toBe(200)
-    expect(body.order.status).toBe('Paid')
+    expect(body.order.status).toBe(OrderStatus.Paid)
   })
 
   test('pay an already paid order returns error', async () => {

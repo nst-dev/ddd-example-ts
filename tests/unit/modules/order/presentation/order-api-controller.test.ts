@@ -2,12 +2,13 @@ import { describe, test, expect, beforeEach, mock } from 'bun:test'
 import { OrderApiController } from '../../../../../src/modules/order/presentation/order-api-controller'
 import { OrderAggregate } from '../../../../../src/modules/order/domain/order-aggregate'
 import type { OrderRepositoryInterface, OrderServiceInterface, OrderItem } from '../../../../../src/modules/order/contracts'
+import { OrderStatus } from '../../../../../src/modules/order/contracts'
 
 const item1: OrderItem = { sku_id: 'aaa', price: 10, quantity: 2 }
 const item2: OrderItem = { sku_id: 'bbb', price: 20, quantity: 1 }
 
 const makePlacedOrder = (id = 1) =>
-  new OrderAggregate(id, { items: [item1], amount: 20, status: 'Placed' })
+  new OrderAggregate(id, { items: [item1], amount: 20, status: OrderStatus.Placed })
 
 const makeRequest = (body: unknown) =>
   new Request('http://localhost', {
@@ -28,7 +29,7 @@ describe('OrderApiController', () => {
       pay: mock(() => Promise.resolve()),
     }
     repo = {
-      list: mock(() => Promise.resolve([{ id: 1, items: [item1], amount: 20, status: 'Placed' as const }])),
+      list: mock(() => Promise.resolve([{ id: 1, items: [item1], amount: 20, status: OrderStatus.Placed }])),
       find: mock((id: number) => Promise.resolve(id === 1 ? makePlacedOrder() : undefined)),
       create: mock((props) => Promise.resolve(new OrderAggregate(1, props))),
       update: mock(() => Promise.resolve()),

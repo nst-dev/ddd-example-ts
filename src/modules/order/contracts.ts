@@ -1,10 +1,22 @@
 
+export enum OrderStatus {
+  Placed = 'Placed',
+  Paid = 'Paid',
+  Completed = 'Completed',
+}
+
+export enum OrderEventName {
+  Placed = 'Order.Placed',
+  ItemPushed = 'Order.ItemPushed',
+  Paid = 'Order.Paid',
+}
+
 export type Order = {id: number} & OrderProperties
 
 export type OrderProperties = {
   items: OrderItem[],
   amount: number,
-  status: 'Placed' | 'Paid' | 'Completed',
+  status: OrderStatus,
 }
 
 export type OrderItem = {
@@ -14,7 +26,7 @@ export type OrderItem = {
 }
 
 export type OrderEvent = {
-  name: 'Order.Placed' | 'Order.ItemPushed' | 'Order.Paid'
+  name: OrderEventName
   payload?: Record<string, any>
 }
 
