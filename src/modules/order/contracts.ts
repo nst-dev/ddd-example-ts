@@ -34,14 +34,14 @@ export interface OrderAggregateInterface {
 }
 
 export interface OrderRepositoryInterface {
-  list(): Order[]
-  find(id: number): OrderAggregateInterface|undefined,
-  create(input: OrderProperties): OrderAggregateInterface,
-  update(order: OrderAggregateInterface, command: OrderAggregateCommand): void,
+  list(): Promise<Order[]>
+  find(id: number): Promise<OrderAggregateInterface|undefined>,
+  create(input: OrderProperties): Promise<OrderAggregateInterface>,
+  update(order: OrderAggregateInterface, command: OrderAggregateCommand): Promise<void>,
 }
 
 export interface OrderServiceInterface {
-  create(items: OrderItem[]): OrderAggregateInterface,
-  pushItem(order: OrderAggregateInterface, item: OrderItem): void,
-  pay(order: OrderAggregateInterface): void,
+  create(items: OrderItem[]): Promise<OrderAggregateInterface>,
+  pushItem(order: OrderAggregateInterface, item: OrderItem): Promise<void>,
+  pay(order: OrderAggregateInterface): Promise<void>,
 }

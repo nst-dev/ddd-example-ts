@@ -7,7 +7,7 @@ export class OrderRepository implements OrderRepositoryInterface {
     protected lastId: number = 0
   ) {}
 
-  list() {
+  async list() {
     let orders = []
     for (const id in this.orders) {
       orders.push({id: Number(id), ...this.orders[id]})
@@ -16,18 +16,18 @@ export class OrderRepository implements OrderRepositoryInterface {
     return orders
   }
 
-  find(id: number) {
+  async find(id: number) {
     return this.orders[id] ? new OrderAggregate(id, this.orders[id]) : undefined
   }
 
-  create(order: OrderProperties) {
+  async create(order: OrderProperties) {
     this.lastId++
     this.orders[this.lastId] = order
 
     return new OrderAggregate(this.lastId, order)
   }
 
-  update(order: OrderAggregateInterface, command: OrderAggregateCommand) {
+  async update(order: OrderAggregateInterface, command: OrderAggregateCommand) {
     const id = order.getId()
 
     if (command.set) {

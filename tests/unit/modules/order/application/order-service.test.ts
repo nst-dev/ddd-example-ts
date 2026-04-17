@@ -21,23 +21,23 @@ describe('OrderService', () => {
   beforeEach(() => {
     bus = { dispatch: mock(() => {}), listen: mock(() => () => {}) }
     repo = {
-      list: mock(() => []),
-      find: mock(() => undefined),
-      create: mock((props) => new OrderAggregate(1, props)),
-      update: mock(() => {}),
+      list: mock(() => Promise.resolve([])),
+      find: mock(() => Promise.resolve(undefined)),
+      create: mock((props) => Promise.resolve(new OrderAggregate(1, props))),
+      update: mock(() => Promise.resolve()),
     }
     service = new OrderService(bus, repo)
   })
 
   describe('create()', () => {
-    test('should call repo.create() and return the new order', () => {
-      const order = service.create([item1])
+    test('should call repo.create() and return the new order', async () => {
+      const order = await service.create([item1])
       expect(repo.create).toHaveBeenCalled()
       expect(order.getId()).toBe(1)
     })
 
-    test('should dispatch Order.Placed event', () => {
-      service.create([item1])
+    test('should dispatch Order.Placed event', async () => {
+      await service.create([item1])
       expect(bus.dispatch).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Order.Placed' })
       )
@@ -45,9 +45,9 @@ describe('OrderService', () => {
   })
 
   describe('pushItem()', () => {
-    test('should call repo.update() and dispatch Order.ItemPushed', () => {
+    test('should call repo.update() and dispatch Order.ItemPushed', async () => {
       const order = makePlacedOrder()
-      service.pushItem(order, item2)
+      await service.pushItem(order, item2)
       expect(repo.update).toHaveBeenCalled()
       expect(bus.dispatch).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Order.ItemPushed' })
@@ -56,14 +56,14 @@ describe('OrderService', () => {
 
     test('should throw when order cannot be paid (already Paid)', () => {
       const order = makePaidOrder()
-      expect(() => service.pushItem(order, item2)).toThrow('Not allowed to push item to order #1')
+      expect(service.pushItem(order, item2)).rejects.toThrow('Not allowed to push item to order #1')
     })
   })
 
   describe('pay()', () => {
-    test('should call repo.update() and dispatch Order.Paid', () => {
+    test('should call repo.update() and dispatch Order.Paid', async () => {
       const order = makePlacedOrder()
-      service.pay(order)
+      await service.pay(order)
       expect(repo.update).toHaveBeenCalled()
       expect(bus.dispatch).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Order.Paid' })
@@ -72,7 +72,7 @@ describe('OrderService', () => {
 
     test('should throw when order is already Paid', () => {
       const order = makePaidOrder()
-      expect(() => service.pay(order)).toThrow('Not allowed to pay for order #1')
+      expect(service.pay(order)).rejects.toThrow('Not allowed to pay for order #1')
     })
   })
 })

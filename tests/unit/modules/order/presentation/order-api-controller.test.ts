@@ -23,15 +23,15 @@ describe('OrderApiController', () => {
 
   beforeEach(() => {
     service = {
-      create: mock(() => makePlacedOrder()),
-      pushItem: mock(() => {}),
-      pay: mock(() => {}),
+      create: mock(() => Promise.resolve(makePlacedOrder())),
+      pushItem: mock(() => Promise.resolve()),
+      pay: mock(() => Promise.resolve()),
     }
     repo = {
-      list: mock(() => [{ id: 1, items: [item1], amount: 20, status: 'Placed' as const }]),
-      find: mock((id: number) => (id === 1 ? makePlacedOrder() : undefined)),
-      create: mock((props) => new OrderAggregate(1, props)),
-      update: mock(() => {}),
+      list: mock(() => Promise.resolve([{ id: 1, items: [item1], amount: 20, status: 'Placed' as const }])),
+      find: mock((id: number) => Promise.resolve(id === 1 ? makePlacedOrder() : undefined)),
+      create: mock((props) => Promise.resolve(new OrderAggregate(1, props))),
+      update: mock(() => Promise.resolve()),
     }
     controller = new OrderApiController(service, repo)
   })

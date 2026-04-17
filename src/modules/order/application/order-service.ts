@@ -8,32 +8,32 @@ export class OrderService implements OrderServiceInterface {
     protected repo: OrderRepositoryInterface
   ) {}
 
-  create(items: OrderItem[]) {
+  async create(items: OrderItem[]) {
     const cmd = OrderAggregate.create(items)
-    const order = this.repo.create(cmd.set as OrderProperties)
+    const order = await this.repo.create(cmd.set as OrderProperties)
     cmd.dispatch.payload = {...cmd.dispatch.payload, order: order.get()}
     this.bus.dispatch(cmd.dispatch)
 
     return order
   }
 
-  pushItem(order: OrderAggregateInterface, item: OrderItem) {
+  async pushItem(order: OrderAggregateInterface, item: OrderItem) {
     if (!order.canPay()) {
       throw new Error(`Not allowed to push item to order #${order.getId()}`)
     }
 
     const cmd = order.pushItem(item)
-    this.repo.update(order, cmd)
+    await this.repo.update(order, cmd)
     this.bus.dispatch(cmd.dispatch)
   }
 
-  pay(order: OrderAggregateInterface) {
+  async pay(order: OrderAggregateInterface) {
     if (!order.canPay()) {
       throw new Error(`Not allowed to pay for order #${order.getId()}`)
     }
 
     const cmd = order.pay()
-    this.repo.update(order, cmd)
+    await this.repo.update(order, cmd)
     this.bus.dispatch(cmd.dispatch)
   }
 }
